@@ -3,14 +3,14 @@ using System.Data.SqlClient;
 
 namespace API.Connection
 {
-    public class ConnectionController : Controller
+    public class UsuarioConnection
     {
         public string connetionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=master;Integrated Security=True;"; 
 
         public SqlConnection sqlConnection { get; set; }
         public SqlCommand SqlCommand { get; private set; }
 
-        public ConnectionController() 
+        public UsuarioConnection() 
         {
             sqlConnection = new SqlConnection(connetionString);
             //Console.ReadLine();
@@ -18,18 +18,17 @@ namespace API.Connection
 
 
         [Obsolete]
-        public void addConteudo()
+        public void addUsuario(string nome, string email)
         {
-            string query = " INSERT INTO [dbo].[Conteudo] (Id, Titulo, Tipo, IdCriador) " +
-                           " VALUES (@id, @titulo, @tipo, @criador ); ";
+            string query = " INSERT INTO [dbo].[Usuario] (ID, Nome, Email) " +
+                           " VALUES (@id, @nome, @email); ";
 
             using (sqlConnection)
             {
                 SqlCommand = new SqlCommand(query, sqlConnection);
                 SqlCommand.Parameters.AddWithValue("@id", 1);
-                SqlCommand.Parameters.AddWithValue("@titulo", "Video teste");
-                SqlCommand.Parameters.AddWithValue("@tipo", "teste");
-                SqlCommand.Parameters.AddWithValue("@criador", 3);
+                SqlCommand.Parameters.AddWithValue("@nome", nome);
+                SqlCommand.Parameters.AddWithValue("@email", email);
 
                 sqlConnection.Open();
                 int i = SqlCommand.ExecuteNonQuery();
