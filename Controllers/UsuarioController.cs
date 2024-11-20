@@ -9,6 +9,8 @@ namespace API.Controllers
     public class UsuarioController : ControllerBase
     {
 
+        // teste git brisa
+
         [HttpGet("adicionar/{nome}/{email}")]
         public void Adicionar(string nome, string email)
         {
