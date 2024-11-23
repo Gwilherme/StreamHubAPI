@@ -1,25 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Model;
+using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 
 namespace API.Connection
 {
-    public class UsuarioConnection
+    public class ItemPlaylistConnection
+
+        // analisar e retirar dps
     {
         public ConnectionController connectionController = new ConnectionController(); 
         public SqlConnection sqlConnection { get; set; }
         public SqlCommand SqlCommand { get; private set; }
 
-        public UsuarioConnection() 
+        public ItemPlaylistConnection() 
         {
             sqlConnection = new SqlConnection(connectionController.connetionString);
             //Console.ReadLine();
         }
 
 
-        public List<Usuario> GetAllUsuarios()
+        public List<ItemPlaylist> GetAllItemPlaylists()
         {
-            string query = connectionController.QueryGetAll("Usuario");
-            var Usuarios = new List<Usuario>();
+            string query = connectionController.QueryGetAll("ItemPlaylist");
+            var ItemPlaylists = new List<ItemPlaylist>();
 
             using (sqlConnection)
             {
@@ -31,25 +34,25 @@ namespace API.Connection
                 {
                     while (reader.Read())
                     {
-                        var Usuario = new Usuario
+                        var ItemPlaylist = new ItemPlaylist
                         {
-                            ID = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                            Email = reader.GetString(reader.GetOrdinal("Email"))
+                            //ID = reader.GetInt32(reader.GetOrdinal("Id")),
+                            //Nome = reader.GetString(reader.GetOrdinal("Nome")),
+                            //Email = reader.GetString(reader.GetOrdinal("Email"))
 
                         };
-                        Usuarios.Add(Usuario);
+                        ItemPlaylists.Add(ItemPlaylist);
                     }
                 }
             }
 
-            return Usuarios;
+            return ItemPlaylists;
         }
 
-        public Usuario GetUsuarioByID(int id)
+        public ItemPlaylist GetItemPlaylistByID(int id)
         {
-            string query = connectionController.QueryGetByID("Usuario", "ID");
-            var Usuario = new Usuario();
+            string query = connectionController.QueryGetByID("ItemPlaylist", "ID");
+            var ItemPlaylist = new ItemPlaylist();
 
             using (sqlConnection)
             {
@@ -62,25 +65,25 @@ namespace API.Connection
                 {
                     while (reader.Read())
                     {
-                        Usuario = new Usuario
+                        ItemPlaylist = new ItemPlaylist
                         {
-                            ID = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                            Email = reader.GetString(reader.GetOrdinal("Email"))
+                            //ID = reader.GetInt32(reader.GetOrdinal("Id")),
+                            //Nome = reader.GetString(reader.GetOrdinal("Nome")),
+                            //Email = reader.GetString(reader.GetOrdinal("Email"))
 
                         };
                     }
                 }
             }
 
-            return Usuario;
+            return ItemPlaylist;
         }
 
-        public void addUsuario(string nome, string email)
+        public void addItemPlaylist(string nome, string email)
         {
             string[] camp = { "Nome", "Email" };
             string[] param = { "@nome", "@email "};
-            string query = connectionController.QueryAdd("Usuario", camp, param);
+            string query = connectionController.QueryAdd("ItemPlaylist", camp, param);
 
             using (sqlConnection)
             {
@@ -105,7 +108,7 @@ namespace API.Connection
             }
         }
 
-        public void UpdateUsuario(int id, string nome, string email)
+        public void UpdateItemPlaylist(int id, string nome, string email)
         {
             // TODO como funcionar update
             // TODO colocar [] para os campos
@@ -130,7 +133,7 @@ namespace API.Connection
 
             //for (int i = 0; i < countParam; i++)
             //{
-            //    string query = connectionController.QueryUpdate("Usuario", "ID", param[i]);
+            //    string query = connectionController.QueryUpdate("ItemPlaylist", "ID", param[i]);
 
             //    using (sqlConnection)
             //    {
@@ -157,7 +160,7 @@ namespace API.Connection
 
             for (int i = 0; i < countParam; i++)
             {
-                string query = connectionController.QueryUpdate("Usuario", "ID", param[i]);
+                string query = connectionController.QueryUpdate("ItemPlaylist", "ID", param[i]);
 
                 // Crie uma nova conexão para cada iteração
                 using (SqlConnection sqlConnection = new SqlConnection(connectionController.connetionString))
@@ -185,9 +188,9 @@ namespace API.Connection
 
         }
 
-        public void DeleteUsuario(int id)
+        public void DeleteItemPlaylist(int id)
         {
-            string query = connectionController.QueryDeleteByID("Usuario", "ID");
+            string query = connectionController.QueryDeleteByID("ItemPlaylist", "ID");
 
             using (sqlConnection)
             {

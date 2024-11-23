@@ -1,25 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Model;
+using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 
 namespace API.Connection
 {
-    public class UsuarioConnection
+    public class CriadorConnection
     {
         public ConnectionController connectionController = new ConnectionController(); 
         public SqlConnection sqlConnection { get; set; }
         public SqlCommand SqlCommand { get; private set; }
 
-        public UsuarioConnection() 
+        public CriadorConnection() 
         {
             sqlConnection = new SqlConnection(connectionController.connetionString);
             //Console.ReadLine();
         }
 
 
-        public List<Usuario> GetAllUsuarios()
+        public List<Criador> GetAllCriadors()
         {
-            string query = connectionController.QueryGetAll("Usuario");
-            var Usuarios = new List<Usuario>();
+            string query = connectionController.QueryGetAll("Criador");
+            var Criadors = new List<Criador>();
 
             using (sqlConnection)
             {
@@ -31,25 +32,25 @@ namespace API.Connection
                 {
                     while (reader.Read())
                     {
-                        var Usuario = new Usuario
+                        var Criador = new Criador
                         {
                             ID = reader.GetInt32(reader.GetOrdinal("Id")),
                             Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                            Email = reader.GetString(reader.GetOrdinal("Email"))
+                            //ListConteudo = reader.GetString(reader.GetOrdinal("Email"))
 
                         };
-                        Usuarios.Add(Usuario);
+                        Criadors.Add(Criador);
                     }
                 }
             }
 
-            return Usuarios;
+            return Criadors;
         }
 
-        public Usuario GetUsuarioByID(int id)
+        public Criador GetCriadorByID(int id)
         {
-            string query = connectionController.QueryGetByID("Usuario", "ID");
-            var Usuario = new Usuario();
+            string query = connectionController.QueryGetByID("Criador", "ID");
+            var Criador = new Criador();
 
             using (sqlConnection)
             {
@@ -62,32 +63,30 @@ namespace API.Connection
                 {
                     while (reader.Read())
                     {
-                        Usuario = new Usuario
+                        Criador = new Criador
                         {
                             ID = reader.GetInt32(reader.GetOrdinal("Id")),
                             Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                            Email = reader.GetString(reader.GetOrdinal("Email"))
+                            //Email = reader.GetString(reader.GetOrdinal("Email"))
 
                         };
                     }
                 }
             }
 
-            return Usuario;
+            return Criador;
         }
 
-        public void addUsuario(string nome, string email)
+        public void addCriador(string nome)
         {
-            string[] camp = { "Nome", "Email" };
-            string[] param = { "@nome", "@email "};
-            string query = connectionController.QueryAdd("Usuario", camp, param);
+            string[] camp = { "Nome" };
+            string[] param = { "@nome"};
+            string query = connectionController.QueryAdd("Criador", camp, param);
 
             using (sqlConnection)
             {
                 SqlCommand = new SqlCommand(query, sqlConnection);
-                //SqlCommand.Parameters.AddWithValue("@id", 1);
                 SqlCommand.Parameters.AddWithValue("@nome", nome);
-                SqlCommand.Parameters.AddWithValue("@email", email);
 
                 sqlConnection.Open();
                 try
@@ -105,11 +104,8 @@ namespace API.Connection
             }
         }
 
-        public void UpdateUsuario(int id, string nome, string email)
+        public void UpdateCriador(int id, string nome)
         {
-            // TODO como funcionar update
-            // TODO colocar [] para os campos
-
             string[] param = new string[2];
             string[] val = new string[2];
             int countParam = 0;
@@ -120,44 +116,10 @@ namespace API.Connection
                 val[0] = nome;
                 countParam++;
             }
-            if (!string.IsNullOrEmpty(email))
-            {
-                param[1] = "Email";
-                val[1] = email;
-                countParam++;
-            }
-
-
-            //for (int i = 0; i < countParam; i++)
-            //{
-            //    string query = connectionController.QueryUpdate("Usuario", "ID", param[i]);
-
-            //    using (sqlConnection)
-            //    {
-            //        using (SqlCommand = new SqlCommand(query, sqlConnection))
-            //        {
-            //            SqlCommand.Parameters.AddWithValue("@id", id);
-            //            SqlCommand.Parameters.AddWithValue("@valorUpdate", val[i]);
-
-            //            try
-            //            {
-            //                if(i==0) sqlConnection.Open();
-
-            //                SqlCommand.ExecuteNonQuery();
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Console.WriteLine($"Erro ao executar atualização para o parâmetro {i}: {ex.Message}");
-            //            }
-            //        }
-            //    }
-
-            //    sqlConnection.Close();
-            //}
 
             for (int i = 0; i < countParam; i++)
             {
-                string query = connectionController.QueryUpdate("Usuario", "ID", param[i]);
+                string query = connectionController.QueryUpdate("Criador", "ID", param[i]);
 
                 // Crie uma nova conexão para cada iteração
                 using (SqlConnection sqlConnection = new SqlConnection(connectionController.connetionString))
@@ -185,9 +147,9 @@ namespace API.Connection
 
         }
 
-        public void DeleteUsuario(int id)
+        public void DeleteCriador(int id)
         {
-            string query = connectionController.QueryDeleteByID("Usuario", "ID");
+            string query = connectionController.QueryDeleteByID("Criador", "ID");
 
             using (sqlConnection)
             {

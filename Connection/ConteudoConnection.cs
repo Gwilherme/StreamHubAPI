@@ -1,25 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using API.Model;
+using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
 
 namespace API.Connection
 {
-    public class UsuarioConnection
+    public class ConteudoConnection
     {
         public ConnectionController connectionController = new ConnectionController(); 
         public SqlConnection sqlConnection { get; set; }
         public SqlCommand SqlCommand { get; private set; }
 
-        public UsuarioConnection() 
+        public ConteudoConnection() 
         {
             sqlConnection = new SqlConnection(connectionController.connetionString);
             //Console.ReadLine();
         }
 
 
-        public List<Usuario> GetAllUsuarios()
+        public List<Conteudo> GetAllConteudos()
         {
-            string query = connectionController.QueryGetAll("Usuario");
-            var Usuarios = new List<Usuario>();
+            string query = connectionController.QueryGetAll("Conteudo");
+            var Conteudos = new List<Conteudo>();
 
             using (sqlConnection)
             {
@@ -31,25 +32,25 @@ namespace API.Connection
                 {
                     while (reader.Read())
                     {
-                        var Usuario = new Usuario
+                        var Conteudo = new Conteudo
                         {
                             ID = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                            Email = reader.GetString(reader.GetOrdinal("Email"))
+                            Titulo = reader.GetString(reader.GetOrdinal("Titulo")),
+                            Tipo = reader.GetString(reader.GetOrdinal("Tipo"))
 
                         };
-                        Usuarios.Add(Usuario);
+                        Conteudos.Add(Conteudo);
                     }
                 }
             }
 
-            return Usuarios;
+            return Conteudos;
         }
 
-        public Usuario GetUsuarioByID(int id)
+        public Conteudo GetConteudoByID(int id)
         {
-            string query = connectionController.QueryGetByID("Usuario", "ID");
-            var Usuario = new Usuario();
+            string query = connectionController.QueryGetByID("Conteudo", "ID");
+            var Conteudo = new Conteudo();
 
             using (sqlConnection)
             {
@@ -62,32 +63,32 @@ namespace API.Connection
                 {
                     while (reader.Read())
                     {
-                        Usuario = new Usuario
+                        Conteudo = new Conteudo
                         {
                             ID = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Nome = reader.GetString(reader.GetOrdinal("Nome")),
-                            Email = reader.GetString(reader.GetOrdinal("Email"))
+                            Titulo = reader.GetString(reader.GetOrdinal("Titulo")),
+                            Tipo = reader.GetString(reader.GetOrdinal("Tipo"))
 
                         };
                     }
                 }
             }
 
-            return Usuario;
+            return Conteudo;
         }
 
-        public void addUsuario(string nome, string email)
+        public void addConteudo(string tipo, string titulo, int criador)
         {
-            string[] camp = { "Nome", "Email" };
-            string[] param = { "@nome", "@email "};
-            string query = connectionController.QueryAdd("Usuario", camp, param);
+            string[] camp = { "Tipo", "Titulo", "CriadorID" };
+            string[] param = { "@tipo", "@titulo", "@criador "};
+            string query = connectionController.QueryAdd("Conteudo", camp, param);
 
             using (sqlConnection)
             {
                 SqlCommand = new SqlCommand(query, sqlConnection);
-                //SqlCommand.Parameters.AddWithValue("@id", 1);
-                SqlCommand.Parameters.AddWithValue("@nome", nome);
-                SqlCommand.Parameters.AddWithValue("@email", email);
+                SqlCommand.Parameters.AddWithValue("@tipo", tipo);
+                SqlCommand.Parameters.AddWithValue("@titulo", titulo);
+                SqlCommand.Parameters.AddWithValue("@criador", criador);
 
                 sqlConnection.Open();
                 try
@@ -105,66 +106,34 @@ namespace API.Connection
             }
         }
 
-        public void UpdateUsuario(int id, string nome, string email)
+        public void UpdateConteudo(int id, string tipo, string titulo)
         {
-            // TODO como funcionar update
-            // TODO colocar [] para os campos
 
             string[] param = new string[2];
             string[] val = new string[2];
             int countParam = 0;
 
-            if (!string.IsNullOrEmpty(nome))
+            if (!string.IsNullOrEmpty(tipo))
             {
-                param[0] = "Nome";
-                val[0] = nome;
+                param[0] = "Tipo";
+                val[0] = tipo;
                 countParam++;
             }
-            if (!string.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(titulo))
             {
-                param[1] = "Email";
-                val[1] = email;
+                param[1] = "Titulo";
+                val[1] = titulo;
                 countParam++;
             }
-
-
-            //for (int i = 0; i < countParam; i++)
-            //{
-            //    string query = connectionController.QueryUpdate("Usuario", "ID", param[i]);
-
-            //    using (sqlConnection)
-            //    {
-            //        using (SqlCommand = new SqlCommand(query, sqlConnection))
-            //        {
-            //            SqlCommand.Parameters.AddWithValue("@id", id);
-            //            SqlCommand.Parameters.AddWithValue("@valorUpdate", val[i]);
-
-            //            try
-            //            {
-            //                if(i==0) sqlConnection.Open();
-
-            //                SqlCommand.ExecuteNonQuery();
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Console.WriteLine($"Erro ao executar atualização para o parâmetro {i}: {ex.Message}");
-            //            }
-            //        }
-            //    }
-
-            //    sqlConnection.Close();
-            //}
 
             for (int i = 0; i < countParam; i++)
             {
-                string query = connectionController.QueryUpdate("Usuario", "ID", param[i]);
+                string query = connectionController.QueryUpdate("Conteudo", "ID", param[i]);
 
-                // Crie uma nova conexão para cada iteração
                 using (SqlConnection sqlConnection = new SqlConnection(connectionController.connetionString))
                 {
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection))
                     {
-                        // Adicione os parâmetros
                         sqlCommand.Parameters.AddWithValue("@id", id);
                         sqlCommand.Parameters.AddWithValue("@valorUpdate", val[i]);
 
@@ -175,7 +144,6 @@ namespace API.Connection
                         }
                         catch (Exception ex)
                         {
-                            // Manipule exceções para capturar erros e evitar falhas não tratadas
                             Console.WriteLine($"Erro ao executar atualização para o parâmetro {i}: {ex.Message}");
                         }
                     }
@@ -185,9 +153,9 @@ namespace API.Connection
 
         }
 
-        public void DeleteUsuario(int id)
+        public void DeleteConteudo(int id)
         {
-            string query = connectionController.QueryDeleteByID("Usuario", "ID");
+            string query = connectionController.QueryDeleteByID("Conteudo", "ID");
 
             using (sqlConnection)
             {

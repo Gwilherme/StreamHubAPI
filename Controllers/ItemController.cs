@@ -17,8 +17,8 @@ namespace API.Controllers
         [HttpGet("teste")]
         public void Teste()
         {
-            var controler = new ConnectionController();
-            controler.addConteudo();
+            //var controler = new ConnectionController();
+            //controler.addConteudo();
         }
         
         [HttpGet]
